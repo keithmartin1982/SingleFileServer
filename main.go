@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -36,17 +37,28 @@ func formatBytes(b int64) string {
 		float64(b)/float64(div), "KMGTPE"[exp])
 }
 
+func hashFile(filename string) (string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return "", errors.New("can't open file" + err.Error())
+	}
+	defer file.Close()
+	hash := sha256.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", errors.New("can't hash file" + err.Error())
+	}
+	return fmt.Sprintf("%x", hash.Sum(nil)), nil
+}
+
 func fileInfo(filename string) (fileSize int64, fileHash string, err error) {
 	info, err := os.Stat(filename)
 	if err != nil {
 		return 0, "", errors.New("file not found" + err.Error())
 	}
-	file, err := os.ReadFile(filename)
-	if err != nil {
-		return
-	}
 	fileSize = info.Size()
-	fileHash = fmt.Sprintf("%x", sha256.Sum256(file))
+	if fileHash, err = hashFile(filename); err != nil {
+		return 0, "", errors.New("can't hash file" + err.Error())
+	}
 	return
 }
 
