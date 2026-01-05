@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download {{ .Filename }}</title>
+    <style>
+        html {
+            background: #000;
+            color: antiquewhite;
+        }
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        a:link, a:visited, a:hover, a:active {
+            text-decoration: none;
+        }
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .link {
+            padding: 15px;
+            background: #111;
+            color: #ddd;
+            text-align: center;
+            border: #f00 1px dashed;
+        }
+        .link:hover {
+            filter: invert(1);
+        }
+        .command{
+            color: #99f;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <a class="link" href="/file" download="{{ .Filename }}">
+        <h1>Download: {{ .Filename }}</h1>
+        <p>Filesize: {{ .Size }}</p>
+        <p>SHA256: {{ .Hash }}</p>
+    </a>
+    </div>
+    <div class="center">
+        <p>
+            Windows hash command:
+        </p>
+        <p class="command">
+            Get-FileHash -Path {{ .Filename }} -Algorithm SHA256
+        </p>
+    </div>
+</body>
+</html>
